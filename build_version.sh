@@ -5,7 +5,7 @@ set -eou pipefail
 # same build)
 
 REPO_USERNAME="dedlyspyder"
-IMAGE_REPO_NAME="factorio-headless-slim"
+IMAGE_REPO_NAME="factorio-headless-ubuntu"
 
 
 if [[ -z "$1" ]]; then
