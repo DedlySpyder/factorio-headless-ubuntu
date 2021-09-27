@@ -12,3 +12,5 @@ RUN curl -L https://www.factorio.com/get-download/$VERSION/headless/linux64 -o /
     && tar -xvf /tmp/factorio.tar.xz -C / \
     && rm -f /tmp/factorio.tar.xz \
     && echo "$VERSION" > /factorio/version
+
+COPY scripts /scripts
