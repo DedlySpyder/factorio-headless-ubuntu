@@ -20,16 +20,19 @@ IFS=" " read -r -a EXTRA_TAGS <<< "$@"
 
 HERE="$(readlink -f "$(dirname "$)")")"
 
+SCRIPTS_VERSION=$(cat "$HERE/scripts/version")
+BASE_TAG="$VERSION-$SCRIPTS_VERSION"
+
 echo "Building $VERSION tag for $IMAGE_REPO_NAME"
 docker build "$HERE" \
-  -t "$IMAGE_REPO_NAME:$VERSION" \
-  -t "$REPO_USERNAME/$IMAGE_REPO_NAME:$VERSION" \
+  -t "$IMAGE_REPO_NAME:$BASE_TAG" \
+  -t "$REPO_USERNAME/$IMAGE_REPO_NAME:$BASE_TAG" \
   --build-arg "VERSION=$VERSION"
 
 for tag in "${EXTRA_TAGS[@]}"; do
   echo "Tagging $VERSION tag to $tag for $IMAGE_REPO_NAME"
-  docker tag "$IMAGE_REPO_NAME:$VERSION" "$IMAGE_REPO_NAME:$tag"
-  docker tag "$IMAGE_REPO_NAME:$VERSION" "$REPO_USERNAME/$IMAGE_REPO_NAME:$tag"
+  docker tag "$IMAGE_REPO_NAME:$BASE_TAG" "$IMAGE_REPO_NAME:$tag"
+  docker tag "$IMAGE_REPO_NAME:$BASE_TAG" "$REPO_USERNAME/$IMAGE_REPO_NAME:$tag"
 done
 
 echo "Pushing $REPO_USERNAME/$IMAGE_REPO_NAME"
