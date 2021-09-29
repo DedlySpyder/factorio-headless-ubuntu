@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--executable', action='store', help=f'Factorio exe file to use instead of {FACTORIO_EXE}')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose logging')
 
-    parser.add_argument('factorio_args', action='extend', help='Args to supply to the Factorio executable')
+    parser.add_argument('factorio_args', action='store', nargs='+', help='Args to supply to the Factorio executable')
 
     script_args = parser.parse_args()
 
