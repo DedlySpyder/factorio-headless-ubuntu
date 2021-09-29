@@ -16,6 +16,12 @@ fi
 
 VERSION="$1"
 shift
+LOCAL=false
+if [[ "$1" == "-l" ]]; then
+  echo "Running local build"
+  LOCAL=true
+  shift
+fi
 IFS=" " read -r -a EXTRA_TAGS <<< "$@"
 
 HERE="$(readlink -f "$(dirname "$)")")"
@@ -35,10 +41,12 @@ for tag in "${EXTRA_TAGS[@]}"; do
   docker tag "$IMAGE_REPO_NAME:$BASE_TAG" "$REPO_USERNAME/$IMAGE_REPO_NAME:$tag"
 done
 
-echo "Pushing $REPO_USERNAME/$IMAGE_REPO_NAME"
-docker push -a "$REPO_USERNAME/$IMAGE_REPO_NAME"
+if [ "$LOCAL" == false ]; then
+  echo "Pushing $REPO_USERNAME/$IMAGE_REPO_NAME"
+  docker push -a "$REPO_USERNAME/$IMAGE_REPO_NAME"
 
-mapfile -t images_to_cleanup < <(docker images "$REPO_USERNAME/$IMAGE_REPO_NAME" | grep "$REPO_USERNAME" | awk '{print $1":"$2}')
-for image in "${images_to_cleanup[@]}"; do
-  docker rmi "$image"
-done
+  mapfile -t images_to_cleanup < <(docker images "$REPO_USERNAME/$IMAGE_REPO_NAME" | grep "$REPO_USERNAME" | awk '{print $1":"$2}')
+  for image in "${images_to_cleanup[@]}"; do
+    docker rmi "$image"
+  done
+fi
