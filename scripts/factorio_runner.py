@@ -3,17 +3,11 @@
 import argparse
 import subprocess
 
-from pathlib import Path
-
-
-FACTORIO_EXE = Path('/factorio/bin/x64/factorio')
-FACTORIO_LOG_FILE = Path('/factorio/factorio-current.log')
-
-vprint = lambda *_, **__: None
+FACTORIO_EXE = '/factorio/bin/x64/factorio'
 
 
 # https://wiki.factorio.com/Command_line_parameters
-def run_factorio(*args, fail_on_error=True, verbose=False, executable=str(FACTORIO_EXE)):
+def run_factorio(*args, fail_on_error=True, verbose=False, executable=FACTORIO_EXE):
     string_args = [str(a) for a in args]
     if verbose:
         print(f'Running Factorio from {executable} with args: {string_args}')
@@ -34,10 +28,10 @@ def run_factorio(*args, fail_on_error=True, verbose=False, executable=str(FACTOR
 
     if proc.returncode > 0:
         if fail_on_error:
-            print('stderr:')
+            print('Factorio stderr:')
             print(proc.stderr.read().decode('utf-8'))
             if verbose:
-                print('stdout:')
+                print('Factorio stdout:')
                 print(''.join(lines))
             raise RuntimeError('Factorio failed to run')
         else:
@@ -58,6 +52,6 @@ if __name__ == '__main__':
     script_args = parser.parse_args()
 
     exe = script_args.executable or FACTORIO_EXE
-    _, lines = run_factorio(*script_args.factorio_args, verbose=script_args.verbose, executable=exe)
+    _, output = run_factorio(*script_args.factorio_args, verbose=script_args.verbose, executable=exe)
 
-    print(''.join(lines))
+    print(''.join(output))
