@@ -10,10 +10,9 @@ latest_release_data="$(curl -sSf https://factorio.com/api/latest-releases)"
 stable_ver="$(echo "$latest_release_data" | jq -r '.stable.headless')"
 experimental_ver="$(echo "$latest_release_data" | jq -r '.experimental.headless')"
 
-"$HERE/build_version.sh" "$stable_ver" "stable"
-
 if [[ "$experimental_ver" == null ]]; then
-  "$HERE/build_version.sh" "$stable_ver" "experimental"
+  "$HERE/build_version.sh" "$stable_ver" "stable" "experimental"
 else
+  "$HERE/build_version.sh" "$stable_ver" "stable"
   "$HERE/build_version.sh" "$experimental_ver" "experimental"
 fi
