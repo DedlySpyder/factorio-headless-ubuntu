@@ -2,10 +2,7 @@ name: Test headless docker build
 on: push
 jobs:
   call-build-on-factorio-version:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/build-on-factorio-version.yaml
-        with:
-          headless_type: experimental
-          factorio_version: 1.1.74
+    uses: ./.github/workflows/build-on-factorio-version.yaml
+    with:
+      headless_type: experimental
+      factorio_version: 1.1.74
