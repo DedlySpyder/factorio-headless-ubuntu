@@ -17,7 +17,7 @@ jobs:
       - name: Trigger experimental build # TODO - lot of values in the payload need updated before completing this
         if: steps.validateExperimental.outputs.exists == 'false'
         run: >
-          curl -SLf
+          curl -sLf
           -X POST
           -H "Accept: application/vnd.github+json"
           -H "Authorization: Bearer ${{ secrets.RUN_GITHUB_ACTIONS_TOKEN }}"
