@@ -12,6 +12,7 @@ factorio_version="$1"
 
 pwd
 readlink -f "$(dirname "$0")"
+git pull
 git branch -a
 
 script_version="$(git describe --tags --abbrev=0)"
