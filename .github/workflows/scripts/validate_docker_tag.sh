@@ -10,6 +10,7 @@ if [[ -z "$1" ]]; then
 fi
 factorio_version="$1"
 
+git pull --tags
 git tag -l
 
 script_version="$(git describe --tags --abbrev=0)"
