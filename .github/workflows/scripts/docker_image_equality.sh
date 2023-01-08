@@ -11,7 +11,7 @@ fi
 factorio_version="$1"
 headless_type="$2"
 
-script_version="$(git describe --tags --abbrev=0)"
+script_version="$(git describe --tags --abbrev=0 || git pull --tags && git tag -l)"
 version_tag="${factorio_version}-${script_version}"
 
 docker pull "$REPO/${IMAGE}:$version_tag"
