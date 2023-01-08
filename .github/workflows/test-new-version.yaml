@@ -6,6 +6,4 @@ jobs:
     with:
       headless_type: experimental
       factorio_version: 1.1.74
-    secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+    secrets: inherit
