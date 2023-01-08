@@ -5,10 +5,7 @@ on:
       headless_type:
         description: 'Headless image version type to build'
         required: true
-        type: choice
-        options:
-          - experimental
-          - stable
+        type: string
       factorio_version:
         description: 'Factorio version to build against'
         required: true
@@ -18,6 +15,8 @@ jobs:
     name: Headless builder
     runs-on: ubuntu-latest
     steps:
+      - name: Verify headless type is an allowed value
+        run: test "${{ inputs.headless_type }}" == experimental || test "${{ inputs.headless_type }}" == stable
       - uses: actions/checkout@v3
       - id: validate
         name: Validate if this headless image for this Factorio version exists
