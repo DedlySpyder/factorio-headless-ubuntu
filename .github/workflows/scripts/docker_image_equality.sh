@@ -17,7 +17,7 @@ version_tag="${factorio_version}-${script_version}"
 docker pull "$REPO/${IMAGE}:$version_tag"
 docker pull "$REPO/${IMAGE}:$headless_type"
 
-if diff <(docker inspect "$REPO/${IMAGE}:$headless_type" | jq '.[].RootFS') <(docker inspect "$REPO/${IMAGE}:$version_tag" | jq '.[].RootFS') > /dev/null; then
+if diff <(docker inspect "$REPO/${IMAGE}:$headless_type" | jq '.[].RootFS') <(docker inspect "$REPO/${IMAGE}:1.1.73" | jq '.[].RootFS') > /dev/null; then
   echo "equals=true" >> $GITHUB_OUTPUT
 else
   echo "equals=false" >> $GITHUB_OUTPUT
