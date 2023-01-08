@@ -9,8 +9,8 @@
 The second version is the version of the helper scripts for tooling.
 
 ## Image Composition
-This contains Factorio, python 3.8, and some [helper scripts](https://github.com/DedlySpyder/FactorioTooling/blob/main/docker/images/headless/scripts) in `/script` for running/parsing Factorio output.
+This contains Factorio, python 3.8, and some [helper scripts](https://github.com/DedlySpyder/factorio-headless-ubuntu/tree/main/scripts) in `/script` for running/parsing Factorio output.
 
 The version of Factorio that was originally downloaded for the image can be found in `/factorio/version`
 
-[Dockerfile Source](https://github.com/DedlySpyder/FactorioTooling/blob/main/docker/images/headless/Dockerfile)
+[Dockerfile Source](https://github.com/DedlySpyder/factorio-headless-ubuntu/blob/main/Dockerfile)
