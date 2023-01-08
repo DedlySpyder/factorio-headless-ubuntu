@@ -6,3 +6,4 @@ jobs:
     with:
       headless_type: experimental
       factorio_version: 1.1.74
+
