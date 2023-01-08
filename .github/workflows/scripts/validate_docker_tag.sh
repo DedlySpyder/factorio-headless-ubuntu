@@ -10,11 +10,7 @@ if [[ -z "$1" ]]; then
 fi
 factorio_version="$1"
 
-pwd
-readlink -f "$(dirname "$0")"
-git pull
-git fetch origin main:main
-git branch -a
+git tag -l
 
 script_version="$(git describe --tags --abbrev=0)"
 tag="${factorio_version}-${script_version}"
