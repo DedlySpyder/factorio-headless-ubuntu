@@ -28,10 +28,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - id: validateAlreadyDone
         name: Validate if the current headless image matches the current headless type image
-        if: steps.validate.output.exists == 'true'
+        if: steps.validate.outputs.exists == 'true'
         run: ./.github/workflows/scripts/docker_image_equality.sh "${{ inputs.factorio_version }}" "${{ inputs.headless_type }}" # Outputs `equals` as true/false
       - name: Build and push headless image
-        if: steps.validate.output.exists == 'false' || steps.validateAlreadyDone.output.equals == 'false'
+        if: steps.validate.outputs.exists == 'false' || steps.validateAlreadyDone.outputs.equals == 'false'
         uses: docker/build-push-action@v3
         with:
           build-args: VERSION=${{ inputs.factorio_version }}
