@@ -1,6 +1,16 @@
 name: Headless docker build, if needed
 on:
-  workflow_call:
+  workflow_call: # For build on tag events
+    inputs:
+      headless_type:
+        description: 'Headless image version type to build'
+        required: true
+        type: string
+      factorio_version:
+        description: 'Factorio version to build against'
+        required: true
+        type: string
+  workflow_dispatch: # For manual runs or version watcher events
     inputs:
       headless_type:
         description: 'Headless image version type to build'
@@ -14,6 +24,7 @@ jobs:
   builder:
     name: Headless builder
     runs-on: ubuntu-latest
+    concurrency: headlessBuild
     steps:
       - name: Verify headless type is an allowed value
         run: test "${{ inputs.headless_type }}" == experimental || test "${{ inputs.headless_type }}" == stable
