@@ -1,21 +1,14 @@
 name: Headless docker build, if needed
 on:
-#  workflow_call: # For build on tag events
-#    inputs:
-#      headless_type:
-#        description: 'Headless image version type to build'
-#        required: true
-#        type: string
-#      factorio_version:
-#        description: 'Factorio version to build against'
-#        required: true
-#        type: string
   workflow_dispatch: # For manual runs or version watcher events
     inputs:
       headless_type:
         description: 'Headless image version type to build'
         required: true
-        type: string
+        type: choice
+        options:
+          - experimental
+          - stable
       factorio_version:
         description: 'Factorio version to build against'
         required: true
