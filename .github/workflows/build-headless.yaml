@@ -1,4 +1,4 @@
-name: Headless docker build, if needed
+name: Single Headless Docker Build
 on:
   workflow_dispatch: # For manual runs or version watcher events
     inputs:
