@@ -1,6 +1,0 @@
-name: Test headless docker build
-on: push
-jobs:
-  call-build-on-factorio-version:
-    uses: ./.github/workflows/factorio-version-watcher.yaml
-    secrets: inherit

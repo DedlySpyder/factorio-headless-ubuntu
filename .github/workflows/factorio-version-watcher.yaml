@@ -3,7 +3,8 @@ on:
   schedule:
     - cron: '39 */6 * * *'
   workflow_dispatch:
-  workflow_call: # TODO - debug
+  release:
+    types: released
 jobs:
   watcher:
     runs-on: ubuntu-latest
