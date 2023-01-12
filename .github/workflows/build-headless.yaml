@@ -23,6 +23,7 @@ jobs:
       - name: Verify headless type is an allowed value
         run: test "${{ inputs.headless_type }}" == experimental || test "${{ inputs.headless_type }}" == stable
       - uses: actions/checkout@v3
+        fetch-depth: 0
       - id: validate
         name: Validate if this headless image for this Factorio version exists
         run: ./.github/workflows/scripts/validate_docker_tag.sh "${{ inputs.factorio_version }}" # Outputs `exists` as true/false
