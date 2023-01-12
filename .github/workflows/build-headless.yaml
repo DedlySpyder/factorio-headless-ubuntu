@@ -48,5 +48,5 @@ jobs:
           build-args: VERSION=${{ inputs.factorio_version }}
           push: true
           tags: |
-            dedlyspyder/${{ inputs.factorio_version }}-${{ steps.scriptVersion.outputs.version }}
-            dedlyspyder/${{ inputs.headless_type }}
+            dedlyspyder/factorio-headless-ubuntu:${{ inputs.factorio_version }}-${{ steps.scriptVersion.outputs.version }}
+            dedlyspyder/factorio-headless-ubuntu:${{ inputs.headless_type }}
