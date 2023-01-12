@@ -48,5 +48,5 @@ jobs:
           build-args: VERSION=${{ inputs.factorio_version }}
           push: true
           tags: |
-            ${{ inputs.factorio_version }}-${{ steps.scriptVersion.outputs.version }}
-            ${{ inputs.headless_type }}
+            dedlyspyder/${{ inputs.factorio_version }}-${{ steps.scriptVersion.outputs.version }}
+            dedlyspyder/${{ inputs.headless_type }}
