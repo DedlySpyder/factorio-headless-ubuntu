@@ -1,7 +1,7 @@
 name: Trigger Headless Builds
 on:
   schedule:
-    - cron: '39 */6 * * *'
+    - cron: '39 * * * *'
   workflow_dispatch:
   release:
     types: released

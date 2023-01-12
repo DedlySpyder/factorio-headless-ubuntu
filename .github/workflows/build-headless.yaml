@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           build-args: VERSION=${{ inputs.factorio_version }}
-#          push: true
+          push: true
           tags: |
             ${{ inputs.factorio_version }}
             ${{ inputs.headless_type }}
