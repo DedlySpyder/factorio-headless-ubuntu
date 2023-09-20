@@ -15,6 +15,7 @@ class TestModHandling(unittest.TestCase):
     def tearDownClass(self):
         self.res.cleanup()
     
+    # strip_source
     def test__strip_source__example_use_case(self):
         file = '/opt/headless_factorio/mods/source/mod_1/info.json'
         src = '/opt/headless_factorio/mods'
@@ -63,6 +64,7 @@ class TestModHandling(unittest.TestCase):
         actual = mod_handling.strip_source(file, src)
         self.assertEqual(actual, expected)
     
+    # list_source_mod_files
     def test__list_source_mod_files__found_only_files_for_func(self):
         files = mod_handling.list_source_mod_files(self.res.mods_root, '.')
         for f in files:
@@ -100,6 +102,7 @@ class TestModHandling(unittest.TestCase):
             expected = os.sep.join(expected_parts)
             self.assertEqual(dst, expected)
     
+    # delete_directory_contents
     def test__delete_directory_contents__files(self):
         dir = self.res.build_test_dir()
         pathlib.Path(os.path.join(dir, 'loose_file.txt')).touch()

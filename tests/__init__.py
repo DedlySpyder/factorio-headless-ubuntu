@@ -3,7 +3,7 @@ import os
 import pathlib
 import shutil
 
-MODS_TEMP_ROOT = os.path.abspath('./tests/resources/.temp/')
+MODS_TEMP_ROOT = os.path.abspath('./tests/.temp/')
 
 class TestResources():
     mods_root = os.path.abspath('./tests/resources/mods')
