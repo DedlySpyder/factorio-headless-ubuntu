@@ -144,6 +144,55 @@ class TestModHandling(unittest.TestCase):
         
         contents = os.listdir(dir)
         self.assertEqual(contents, [], 'Files were not deleted')
+    
+    # merge_mods
+    def test__merge_mods__found_only_symlinks(self):
+        dir = self.res.build_test_dir()
+        mod_handling.merge_mods(self.res.mods_root, dir)
+        files = list(pathlib.Path(dir).rglob('*.json'))
+        files.extend(list(pathlib.Path(dir).rglob('*.zip')))
+        for f in files:
+            self.assertTrue(pathlib.Path(f).is_symlink(), f'Leaf is not a symlink: {f}')
+            
+    def test__merge_mods__file_counts_total(self):
+        dir = self.res.build_test_dir()
+        mod_handling.merge_mods(self.res.mods_root, dir)
+        files = list(pathlib.Path(dir).rglob('*.json'))
+        files.extend(list(pathlib.Path(dir).rglob('*.zip')))
+        self.assertEqual(len(files), 4, "Unexpected count of leaf files")
+            
+    def test__merge_mods__file_counts_by_type(self):
+        dir = self.res.build_test_dir()
+        mod_handling.merge_mods(self.res.mods_root, dir)
+        files = list(pathlib.Path(dir).rglob('*.json'))
+        files.extend(list(pathlib.Path(dir).rglob('*.zip')))
+        zips, infos = 0, 0
+        for f in files:
+            fs = str(f)
+            if fs.endswith('.zip'):
+                zips += 1
+            elif fs.endswith('info.json'):
+                infos += 1
+            else:
+                raise AssertionError(f'Unexpected file type: {fs}')
+        self.assertEqual(zips, 2, "Unexpected count of leaf files")
+        self.assertEqual(infos, 2, "Unexpected count of leaf files")
+
+    def test__merge_mods__prior_data_deleted(self):
+        dir = self.res.build_test_dir()
+        pathlib.Path(os.path.join(dir, 'old_file.zip')).touch()
+        pathlib.Path(os.path.join(dir, 'old_file.json')).touch()
+        pathlib.Path(os.path.join(dir, 'mod_dir')).mkdir()
+        pathlib.Path(os.path.join(dir, 'mod_dir', 'old_file.json')).touch()
+        
+        mod_handling.merge_mods(self.res.mods_root, dir)
+        files = list(pathlib.Path(dir).rglob('*.json'))
+        files.extend(list(pathlib.Path(dir).rglob('*.zip')))
+        for f in files:
+            fs = str(f)
+            if fs.endswith('old_file.zip') or fs.endswith('old_file.json'):
+                raise AssertionError(f'Old file still found after merge: {fs}')
+
 
 if __name__ == '__main__':
     unittest.main()

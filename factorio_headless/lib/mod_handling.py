@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 
 from collections.abc import Callable
@@ -46,6 +47,10 @@ def delete_directory_contents(directory: str) -> None:
             shutil.rmtree(os.path.join(root, d))
 
 
-# def merge_mods(root_src_dir=MODS_SRC, root_dst_dir=MODS_DST) -> None:
-
-    
+def merge_mods(root_src_dir=MODS_SRC, dst_dir=MODS_DST) -> None:
+    delete_directory_contents(dst_dir)
+    for src, dst in list_source_mod_files(root_src_dir, dst_dir):
+        dst_dir = os.path.split(dst)[0]
+        if not os.path.exists(dst_dir):
+            pathlib.Path(dst_dir).mkdir(parents=True)
+        os.symlink(src, dst)
