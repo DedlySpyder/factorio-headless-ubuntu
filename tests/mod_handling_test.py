@@ -75,13 +75,13 @@ class TestModHandling(unittest.TestCase):
     def test__list_source_mod_files__file_counts_by_type(self):
         files = mod_handling.list_source_mod_files(self.res.mods_root, '.')
         zips, infos = 0, 0
-        for f in files:
-            if f[0].endswith('.zip'):
+        for src, _ in files:
+            if src.endswith('.zip'):
                 zips += 1
-            elif f[0].endswith('info.json'):
+            elif src.endswith('info.json'):
                 infos += 1
             else:
-                raise AssertionError(f'Unexpected file type: {f[0]}')
+                raise AssertionError(f'Unexpected file type: {src}')
         self.assertEqual(zips, 2, "Unexpected count of leaf files")
         self.assertEqual(infos, 2, "Unexpected count of leaf files")
     
