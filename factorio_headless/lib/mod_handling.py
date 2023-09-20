@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from collections.abc import Callable
 
@@ -37,9 +38,13 @@ def list_source_mod_files(trunk: str, dst: str) -> list[tuple[str, str]]:
     return all_files
 
 
-# def link_file(src: str, dst_root: str):
-    
-    
+def delete_directory_contents(directory: str) -> None:
+    for root, dirs, files in os.walk(directory):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
+
 
 # def merge_mods(root_src_dir=MODS_SRC, root_dst_dir=MODS_DST) -> None:
 

@@ -99,6 +99,48 @@ class TestModHandling(unittest.TestCase):
             expected_parts.insert(0, '.')
             expected = os.sep.join(expected_parts)
             self.assertEqual(dst, expected)
+    
+    def test__delete_directory_contents__files(self):
+        dir = self.res.build_test_dir()
+        pathlib.Path(os.path.join(dir, 'loose_file.txt')).touch()
+        pathlib.Path(os.path.join(dir, 'loose_file1.txt')).touch()
+        pathlib.Path(os.path.join(dir, 'loose_file2.txt')).touch()
+        mod_handling.delete_directory_contents(dir)
+        
+        contents = os.listdir(dir)
+        self.assertEqual(contents, [], 'Files were not deleted')
+    
+    def test__delete_directory_contents__empty_dirs(self):
+        dir = self.res.build_test_dir()
+        pathlib.Path(os.path.join(dir, 'empty_dir')).mkdir()
+        pathlib.Path(os.path.join(dir, 'empty_dir1')).mkdir()
+        pathlib.Path(os.path.join(dir, 'empty_dir2')).mkdir()
+        mod_handling.delete_directory_contents(dir)
+        
+        contents = os.listdir(dir)
+        self.assertEqual(contents, [], 'Files were not deleted')
+    
+    def test__delete_directory_contents__non_empty_dirs(self):
+        dir = self.res.build_test_dir()
+        pathlib.Path(os.path.join(dir, 'non_empty_dir')).mkdir()
+        pathlib.Path(os.path.join(dir, 'non_empty_dir', 'dir_file.txt')).touch()
+        pathlib.Path(os.path.join(dir, 'non_empty_dir1')).mkdir()
+        pathlib.Path(os.path.join(dir, 'non_empty_dir1', 'dir_file1.txt')).touch()
+        mod_handling.delete_directory_contents(dir)
+        
+        contents = os.listdir(dir)
+        self.assertEqual(contents, [], 'Files were not deleted')
+    
+    def test__delete_directory_contents__combined(self):
+        dir = self.res.build_test_dir()
+        pathlib.Path(os.path.join(dir, 'loose_file.txt')).touch()
+        pathlib.Path(os.path.join(dir, 'empty_dir')).mkdir()
+        pathlib.Path(os.path.join(dir, 'non_empty_dir')).mkdir()
+        pathlib.Path(os.path.join(dir, 'non_empty_dir', 'dir_file.txt')).touch()
+        mod_handling.delete_directory_contents(dir)
+        
+        contents = os.listdir(dir)
+        self.assertEqual(contents, [], 'Files were not deleted')
 
 if __name__ == '__main__':
     unittest.main()
