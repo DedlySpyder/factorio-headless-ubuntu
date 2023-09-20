@@ -1,3 +1,4 @@
+import os
 import pathlib
 import unittest
 from . import TestResources
@@ -83,7 +84,21 @@ class TestModHandling(unittest.TestCase):
                 raise AssertionError(f'Unexpected file type: {f[0]}')
         self.assertEqual(zips, 2, "Unexpected count of leaf files")
         self.assertEqual(infos, 2, "Unexpected count of leaf files")
-        
+    
+    def test__list_source_mod_files__check_destination(self):
+        files = mod_handling.list_source_mod_files(self.res.mods_root, '.')
+        for src, dst in files:
+            split_pt = 9999
+            if src.endswith('.zip'):
+                split_pt = -1
+            elif src.endswith('info.json'):
+                split_pt = -2
+            else:
+                raise AssertionError(f'Unexpected file type: {src}')
+            expected_parts = src.split(os.sep)[split_pt:]
+            expected_parts.insert(0, '.')
+            expected = os.sep.join(expected_parts)
+            self.assertEqual(dst, expected)
 
 if __name__ == '__main__':
     unittest.main()
