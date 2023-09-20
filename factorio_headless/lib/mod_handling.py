@@ -27,15 +27,18 @@ def strip_source(file: str, src: str) -> str:
     temp = file.removeprefix(src)
     part_split = 1 if src.endswith('/') else 2
     return os.sep.join(temp.split(os.sep)[part_split:])
-    
 
-def list_source_mod_files(trunk: str, dst: str) -> list[tuple[str, str]]:
+
+def replace_source(file: str, src: str, dst: str) -> str:
+    new_src = strip_source(file, src)
+    return os.path.join(dst, new_src)
+
+
+def list_source_mod_files(trunk: str) -> list[str]:
     all_files = []
     for root, _, files in os.walk(trunk):
         for f in files:
-            src_f = os.path.join(root, f)
-            dst_f = os.path.join(dst, strip_source(src_f, trunk))
-            all_files.append((src_f, dst_f))
+            all_files.append(os.path.join(root, f))
     return all_files
 
 
@@ -47,10 +50,11 @@ def delete_directory_contents(directory: str) -> None:
             shutil.rmtree(os.path.join(root, d))
 
 
-def merge_mods(root_src_dir=MODS_SRC, dst_dir=MODS_DST) -> None:
-    delete_directory_contents(dst_dir)
-    for src, dst in list_source_mod_files(root_src_dir, dst_dir):
-        dst_dir = os.path.split(dst)[0]
+def merge_mods(root_src_dir=MODS_SRC, dst_mod_dir=MODS_DST) -> None:
+    delete_directory_contents(dst_mod_dir)
+    for src_file in list_source_mod_files(root_src_dir):
+        dst_file = replace_source(src_file, root_src_dir, dst_mod_dir)
+        dst_dir = os.path.split(dst_file)[0]
         if not os.path.exists(dst_dir):
             pathlib.Path(dst_dir).mkdir(parents=True)
-        os.symlink(src, dst)
+        os.symlink(src_file, dst_file)
