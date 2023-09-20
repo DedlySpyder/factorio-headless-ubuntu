@@ -203,6 +203,34 @@ class TestModHandling(unittest.TestCase):
         contents = os.listdir(dir)
         self.assertEqual(contents, [], 'Files were not deleted')
     
+    # create_dir_for_file
+    def test__create_dir_for_file__dir_created(self):
+        dir = self.res.build_test_dir()
+        wanted_file = os.path.join(dir, 'dir_name', 'file_name')
+        expected_dir = os.path.join(dir, 'dir_name')
+        
+        mod_handling.create_dir_for_file(wanted_file)
+        path = pathlib.Path(expected_dir)
+        self.assertTrue(path.exists(), 'Expected dir does not exist')
+        self.assertTrue(path.is_dir(), 'Expected dir is not a dir')
+        
+    def test__create_dir_for_file__wanted_file_not_created(self):
+        dir = self.res.build_test_dir()
+        wanted_file = os.path.join(dir, 'dir_name', 'file_name')
+        
+        mod_handling.create_dir_for_file(wanted_file)
+        file_path = pathlib.Path(wanted_file)
+        self.assertFalse(file_path.exists(), 'File exists when it should not')
+        
+    def test__create_dir_for_file__expected_dir_not_empty(self):
+        dir = self.res.build_test_dir()
+        wanted_file = os.path.join(dir, 'dir_name', 'file_name')
+        expected_dir = os.path.join(dir, 'dir_name')
+        
+        mod_handling.create_dir_for_file(wanted_file)
+        contents = os.listdir(expected_dir)
+        self.assertEqual(contents, [], 'Expected dir is not empty')
+    
     # merge_mods
     def test__merge_mods__found_only_symlinks(self):
         dir = self.res.build_test_dir()

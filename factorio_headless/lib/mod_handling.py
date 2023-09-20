@@ -50,11 +50,15 @@ def delete_directory_contents(directory: str) -> None:
             shutil.rmtree(os.path.join(root, d))
 
 
+def create_dir_for_file(file: str) -> None:
+    dir = os.path.split(file)[0]
+    if not os.path.exists(dir):
+        pathlib.Path(dir).mkdir(parents=True)
+
+
 def merge_mods(root_src_dir=MODS_SRC, dst_mod_dir=MODS_DST) -> None:
     delete_directory_contents(dst_mod_dir)
     for src_file in list_source_mod_files(root_src_dir):
         dst_file = replace_source(src_file, root_src_dir, dst_mod_dir)
-        dst_dir = os.path.split(dst_file)[0]
-        if not os.path.exists(dst_dir):
-            pathlib.Path(dst_dir).mkdir(parents=True)
+        create_dir_for_file(dst_file)
         os.symlink(src_file, dst_file)
