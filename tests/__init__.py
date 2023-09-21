@@ -8,7 +8,7 @@ MODS_TEMP_ROOT = os.path.abspath('./tests/.temp/')
 class TestResources():
     mods_root = os.path.abspath('./tests/resources/mods')
     
-    def __init__(self, mod_name) -> None:
+    def __init__(self, mod_name: str) -> None:
         self.temp_dir = os.path.join(MODS_TEMP_ROOT, mod_name)
         pathlib.Path(self.temp_dir).mkdir(parents=True, exist_ok=True)
     

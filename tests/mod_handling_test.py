@@ -138,7 +138,7 @@ class TestModHandling(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     # list_source_mod_files
-    def test__list_source_mod_files__found_only_files_for_func(self):
+    def test__list_source_mod_files__found_only_files(self):
         files = mod_handling.list_source_mod_files(self.res.mods_root)
         for f in files:
             self.assertTrue(pathlib.Path(f).is_file(), f'Leaf is not a file: {f}')
