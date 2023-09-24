@@ -118,9 +118,9 @@ class TestModPortal__parse_dependency_list(unittest.TestCase):
 # POC for requests mocking, works well, have to supply all URLs that will get called
 # @requests_mock.Mocker()
 # class TestModPortal_download_mods(unittest.TestCase):
-#     @classmethod
-#     def setUpClass(self):
-#         self.res = TestResources('TestModPortal_download_mods')
+    # @classmethod
+    # def setUpClass(self):
+    #     self.res = TestResources(self.__name__)
     
 #     @classmethod
 #     def tearDownClass(self):
