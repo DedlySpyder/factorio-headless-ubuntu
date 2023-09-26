@@ -19,13 +19,13 @@ def parse_dependency_list(dependencies: list[str], keep_optional: bool = False) 
     return needed_dependencies
 
 
-# def get_latest_version(mod_data: dict) -> dict:
-#     latest_version = {"released_at": datetime.fromisoformat('1970-01-01')}
-#     for release in mod_data['releases']:
-#         release['released_at'] = datetime.fromisoformat(release['released_at'][:-1]) # Need to remove "Z" from the end
-#         if latest_version['released_at'] < release['released_at']:
-#             latest_version = release
-#     return latest_version
+def get_latest_version(mod_data: dict) -> dict:
+    latest_version = {"released_at": datetime.fromisoformat('1970-01-01')}
+    for release in mod_data['releases']:
+        release['released_at'] = datetime.fromisoformat(release['released_at'][:-1]) # Need to remove "Z" from the end
+        if latest_version['released_at'] < release['released_at']:
+            latest_version = release
+    return latest_version
 
 
 # def find_mod_dependencies(mod_data: dict) -> list[str]:
