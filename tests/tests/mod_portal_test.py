@@ -1,4 +1,5 @@
 import datetime
+import json
 import requests_mock
 import unittest
 
@@ -206,6 +207,187 @@ class TestModPortal__get_latest_version(unittest.TestCase):
         mod_data['releases'].reverse()
         latest_version = mod_portal.get_latest_version(mod_data)
         self.assertEqual(latest_version['version'], '2', f'Unexpected latest version returned: {latest_version}')
+
+
+class TestModPortal__find_mod_dependencies(unittest.TestCase):
+    def test__single_release_small(self):
+        mod_data = generate_mod_data('mod_name', [["foo", "! bar", "? baz", "(?) qux", "~ quxx"]])
+        expected = ["foo", "quxx"]
+        actual = mod_portal.find_mod_dependencies(mod_data)
+        self.assertEqual(actual, expected)
+    
+    def test__single_release_large(self):
+        mod_data = generate_mod_data('mod_name', [[
+            "foo", "foo1",
+            "! bar", "! bar1",
+            "? baz", "? baz1",
+            "(?) qux", "(?) qux1",
+            "~ quxx", "~ quxx1"
+        ]])
+        expected = ["foo", "foo1", "quxx", "quxx1"]
+        actual = mod_portal.find_mod_dependencies(mod_data)
+        self.assertEqual(actual, expected)
+    
+    def test__multiple_release_small(self):
+        mod_data = generate_mod_data('mod_name', [
+            ["0foo", "! 0bar", "? 0baz", "(?) 0qux", "~ 0quxx"],
+            ["foo", "! bar", "? baz", "(?) qux", "~ quxx"]
+        ])
+        expected = ["foo", "quxx"]
+        actual = mod_portal.find_mod_dependencies(mod_data)
+        self.assertEqual(actual, expected)
+    
+    def test__multiple_release_large(self):
+        mod_data = generate_mod_data('mod_name', [[
+                "0foo", "0foo1",
+                "! 0bar", "! 0bar1",
+                "? 0baz", "? 0baz1",
+                "(?) 0qux", "(?) 0qux1",
+                "~ 0quxx", "~ 0quxx1"
+            ],[
+                "foo", "foo1",
+                "! bar", "! bar1",
+                "? baz", "? baz1",
+                "(?) qux", "(?) qux1",
+                "~ quxx", "~ quxx1"
+            ]
+        ])
+        expected = ["foo", "foo1", "quxx", "quxx1"]
+        actual = mod_portal.find_mod_dependencies(mod_data)
+        self.assertEqual(actual, expected)
+
+
+@requests_mock.Mocker()
+class TestModPortal__get_download_list(unittest.TestCase):
+    def mock_requests(self, mock: requests_mock.Mocker, mods: list[dict]):
+        for m in mods:
+            mock.get(f'https://mods.factorio.com/api/mods/{m["name"]}/full', text=json.dumps(m))
+    
+    def test__single_mod_single_release_small(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [["foo", "! bar", "? baz", "(?) qux", "~ quxx"]])
+        expected = set(["mod_name", "foo", "quxx"])
+        self.mock_requests(m, [mod_data])
+        actual = mod_portal.get_download_list(['mod_name'])
+        self.assertSetEqual(actual, expected)
+    
+    def test__single_mod_single_release_large(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [[
+            "foo", "foo1",
+            "! bar", "! bar1",
+            "? baz", "? baz1",
+            "(?) qux", "(?) qux1",
+            "~ quxx", "~ quxx1"
+        ]])
+        expected = set(["mod_name", "foo", "foo1", "quxx", "quxx1"])
+        self.mock_requests(m, [mod_data])
+        actual = mod_portal.get_download_list(['mod_name'])
+        self.assertEqual(actual, expected)
+    
+    def test__single_mod_multiple_release_small(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [
+            ["0foo", "! 0bar", "? 0baz", "(?) 0qux", "~ 0quxx"],
+            ["foo", "! bar", "? baz", "(?) qux", "~ quxx"]
+        ])
+        expected = set(["mod_name", "foo", "quxx"])
+        self.mock_requests(m, [mod_data])
+        actual = mod_portal.get_download_list(['mod_name'])
+        self.assertEqual(actual, expected)
+    
+    def test__single_mod_multiple_release_large(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [[
+                "0foo", "0foo1",
+                "! 0bar", "! 0bar1",
+                "? 0baz", "? 0baz1",
+                "(?) 0qux", "(?) 0qux1",
+                "~ 0quxx", "~ 0quxx1"
+            ],[
+                "foo", "foo1",
+                "! bar", "! bar1",
+                "? baz", "? baz1",
+                "(?) qux", "(?) qux1",
+                "~ quxx", "~ quxx1"
+            ]
+        ])
+        expected = set(["mod_name", "foo", "foo1", "quxx", "quxx1"])
+        self.mock_requests(m, [mod_data])
+        actual = mod_portal.get_download_list(['mod_name'])
+        self.assertEqual(actual, expected)
+    
+    def test__multiple_mods_single_release_small(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [["foo", "! bar", "? baz", "(?) qux", "~ quxx"]])
+        mod_data1 = generate_mod_data('mod_name1', [["foo", "! bar", "? baz", "(?) qux", "~ quxx1"]])
+        expected = set(["mod_name", "foo", "quxx", "quxx1", "mod_name1"])
+        self.mock_requests(m, [mod_data, mod_data1])
+        actual = mod_portal.get_download_list(['mod_name', 'mod_name1'])
+        self.assertSetEqual(actual, expected)
+    
+    def test__multiple_mods_single_release_large(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [[
+            "foo", "foo1",
+            "! bar", "! bar1",
+            "? baz", "? baz1",
+            "(?) qux", "(?) qux1",
+            "~ quxx", "~ quxx1"
+        ]])
+        mod_data1 = generate_mod_data('mod_name1', [[
+            "foo", "foo1",
+            "! bar", "! bar1",
+            "? baz", "? baz1",
+            "(?) qux", "(?) qux1",
+            "~ 0quxx", "~ 0quxx1"
+        ]])
+        expected = set(["mod_name", "foo", "foo1", "quxx", "quxx1", "mod_name1", "0quxx", "0quxx1"])
+        self.mock_requests(m, [mod_data, mod_data1])
+        actual = mod_portal.get_download_list(['mod_name', 'mod_name1'])
+        self.assertEqual(actual, expected)
+    
+    def test__multiple_mods_multiple_release_small(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [
+            ["0foo", "! 0bar", "? 0baz", "(?) 0qux", "~ 0quxx"],
+            ["foo", "! bar", "? baz", "(?) qux", "~ quxx"]
+        ])
+        mod_data1 = generate_mod_data('mod_name1', [
+            ["0foo", "! 0bar", "? 0baz", "(?) 0qux", "~ 0quxx"],
+            ["foo", "! bar", "? baz", "(?) qux", "~ quxx1"]
+        ])
+        expected = set(["mod_name", "foo", "quxx", "mod_name1", "quxx1"])
+        self.mock_requests(m, [mod_data, mod_data1])
+        actual = mod_portal.get_download_list(['mod_name', 'mod_name1'])
+        self.assertEqual(actual, expected)
+    
+    def test__multiple_mods_multiple_release_large(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [[
+                "0foo", "0foo1",
+                "! 0bar", "! 0bar1",
+                "? 0baz", "? 0baz1",
+                "(?) 0qux", "(?) 0qux1",
+                "~ 0quxx", "~ 0quxx1"
+            ],[
+                "foo", "foo1",
+                "! bar", "! bar1",
+                "? baz", "? baz1",
+                "(?) qux", "(?) qux1",
+                "~ quxx", "~ quxx1"
+            ]
+        ])
+        mod_data1 = generate_mod_data('mod_name1', [[
+                "0foo", "0foo1",
+                "! 0bar", "! 0bar1",
+                "? 0baz", "? 0baz1",
+                "(?) 0qux", "(?) 0qux1",
+                "~ 0quxx", "~ 0quxx1"
+            ],[
+                "foo", "foo1",
+                "! bar", "! bar1",
+                "? baz", "? baz1",
+                "(?) qux", "(?) qux1",
+                "~ 0quxx", "~ 0quxx1"
+            ]
+        ])
+        expected = set(["mod_name", "foo", "foo1", "quxx", "quxx1", "mod_name1", "0quxx", "0quxx1"])
+        self.mock_requests(m, [mod_data, mod_data1])
+        actual = mod_portal.get_download_list(['mod_name', 'mod_name1'])
+        self.assertEqual(actual, expected)
 
 
 # POC for requests mocking, works well, have to supply all URLs that will get called

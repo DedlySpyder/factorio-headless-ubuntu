@@ -28,23 +28,32 @@ def get_latest_version(mod_data: dict) -> dict:
     return latest_version
 
 
-# def find_mod_dependencies(mod_data: dict) -> list[str]:
-#     latest_version = get_latest_version(mod_data)
-#     dependencies = latest_version['info_json']['dependencies']
-#     return parse_dependency_list(dependencies)
+def find_mod_dependencies(mod_data: dict) -> list[str]:
+    latest_version = get_latest_version(mod_data)
+    dependencies = latest_version['info_json']['dependencies']
+    return parse_dependency_list(dependencies)
+
+
+def get_download_list(mods: set[str]) -> set[str]:
+    download_names = set()
+    for m in mods:
+        mod_data = requests.get(f'https://mods.factorio.com/api/mods/{m}/full').json()
+        download_names.add(m)
+        download_names.update(find_mod_dependencies(mod_data))
+    return download_names
 
 
 # # player_data: PlayerData, 
 # def download_mods(mods: set[str], dst_dir: str = MANAGED_MODS_DIR):
 #     pathlib.Path(dst_dir).mkdir(parents=True, exist_ok=True)
-#     dependencies = set()
-#     for m in mods:
-#         mod_data = requests.get(f'https://mods.factorio.com/api/mods/{m}/full').json()
-#         dependencies.update(find_mod_dependencies(mod_data))
-#         print('find dependencies and merge into mods')
-#     mods.extend(dependencies) # TODO - need to remove "base"
-#     return mods
+#     dependencies = get_download_list(mods)
+    # for m in mods:
+    #     mod_data = requests.get(f'https://mods.factorio.com/api/mods/{m}/full').json()
+    #     dependencies.update(find_mod_dependencies(mod_data))
+    #     print('find dependencies and merge into mods')
+    # mods.extend(dependencies) # TODO - need to remove "base"
+    # return mods
     
-#     for m in mods:
-#         print('actually download the mods to the dst dir')
-#     pass
+    # for m in mods:
+    #     print('actually download the mods to the dst dir')
+    # pass
