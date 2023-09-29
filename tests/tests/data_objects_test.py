@@ -8,7 +8,6 @@ class TestDependecyObject__init(unittest.TestCase):
         dep_str = 'MOD_NAME'
         dep = data_objects.Dependency(dep_str)
         self.assertEqual(dep.mod_name, 'MOD_NAME')
-        pass
     
     def test__no_version_incompatible(self):
         dep_str = '! MOD_NAME'
@@ -16,7 +15,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertFalse(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__no_version_optional(self):
         dep_str = '? MOD_NAME'
@@ -24,7 +22,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertTrue(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__no_version_hidden_optional(self):
         dep_str = '(?) MOD_NAME'
@@ -32,7 +29,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertTrue(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__no_version_required_no_load_order(self):
         dep_str = '~ MOD_NAME'
@@ -40,7 +36,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertTrue(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertTrue(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__no_prefix_less_than(self):
         dep_str = 'MOD_NAME < 0.0.1'
@@ -48,7 +43,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertEqual(dep.equality, '<')
         self.assertEqual(dep.version, '0.0.1')
-        pass
     
     def test__no_prefix_less_than_or_equal(self):
         dep_str = 'MOD_NAME <= 0.0.1'
@@ -56,7 +50,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertEqual(dep.equality, '<=')
         self.assertEqual(dep.version, '0.0.1')
-        pass
     
     def test__no_prefix_equal(self):
         dep_str = 'MOD_NAME = 0.0.1'
@@ -64,7 +57,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertEqual(dep.equality, '=')
         self.assertEqual(dep.version, '0.0.1')
-        pass
     
     def test__no_prefix_greater_than_or_equal(self):
         dep_str = 'MOD_NAME >= 0.0.1'
@@ -72,7 +64,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertEqual(dep.equality, '>=')
         self.assertEqual(dep.version, '0.0.1')
-        pass
     
     def test__no_prefix_greater_than(self):
         dep_str = 'MOD_NAME > 0.0.1'
@@ -80,7 +71,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.mod_name, 'MOD_NAME')
         self.assertEqual(dep.equality, '>')
         self.assertEqual(dep.version, '0.0.1')
-        pass
     
     # Not sure if this is allowed by the Mod Portal, but easy to cover
     def test__full_incompatible_strange_spacing(self):
@@ -91,7 +81,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.version, '0.0.1')
         self.assertFalse(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__full_incompatible(self):
         dep_str = '! MOD_NAME > 0.0.1'
@@ -101,7 +90,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.version, '0.0.1')
         self.assertFalse(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__full_optional_dependency(self):
         dep_str = '? MOD_NAME = 0.0.1'
@@ -111,7 +99,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.version, '0.0.1')
         self.assertTrue(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__full_hidden_optional_dependency(self):
         dep_str = '(?) MOD_NAME <= 0.0.1'
@@ -121,7 +108,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.version, '0.0.1')
         self.assertTrue(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertFalse(dep.required, 'Unexpected Depedency required flag')
-        pass
     
     def test__full_required_no_load_order(self):
         dep_str = '~ MOD_NAME < 0.0.1'
@@ -131,7 +117,6 @@ class TestDependecyObject__init(unittest.TestCase):
         self.assertEqual(dep.version, '0.0.1')
         self.assertTrue(dep.compatible, 'Unexpected Depedency compatible flag')
         self.assertTrue(dep.required, 'Unexpected Depedency required flag')
-        pass
 
 
 class TestDependecyObject__parse_compatibility_operator(unittest.TestCase):
