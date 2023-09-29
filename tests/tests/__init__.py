@@ -6,6 +6,7 @@ import shutil
 MODS_TEMP_ROOT = os.path.abspath('./tests/.temp/')
 
 class TestResources():
+    resources_root = os.path.abspath('./tests/resources')
     mods_root = os.path.abspath('./tests/resources/mods')
     
     def __init__(self, mod_name: str = '') -> None:

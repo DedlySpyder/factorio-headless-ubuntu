@@ -1,3 +1,5 @@
+import json
+
 from dataclasses import dataclass
 from typing import Tuple
 
@@ -38,9 +40,23 @@ class Dependency():
         else:
             raise NotImplementedError(f'Unknown compatibility operator: {operator}')
 
-# @dataclass
-# class PlayerData(): # TODO - allow setting the values or loading from a file
-#     username: str = ''
-#     token: str = ''
-#     def __init__(self) -> None:
-#         pass
+
+@dataclass
+class PlayerData():
+    def set_values_from_file(self, filename: str) -> 'PlayerData':
+        with open(filename) as f:
+            data = json.load(f)
+            return self.set_values(data['service-username'], data['service-token'])
+    
+    
+    def set_values(self, username: str, token: str) -> 'PlayerData':
+        self.username = username
+        self.token = token
+        return self
+    
+    
+    def as_params(self) -> dict[str]:
+        return {
+            "username": self.username,
+            "token": self.token
+        }

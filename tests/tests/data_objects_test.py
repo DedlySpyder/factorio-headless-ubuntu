@@ -1,4 +1,7 @@
+import os
 import unittest
+
+from . import TestResources
 
 from factorio_headless.lib import data_objects
 
@@ -139,3 +142,56 @@ class TestDependecyObject__parse_compatibility_operator(unittest.TestCase):
         compatible, required = data_objects.Dependency._parse_compatibility_operator(None, '~')
         self.assertTrue(compatible, 'Unexpected Depedency compatible flag')
         self.assertTrue(required, 'Unexpected Depedency required flag')
+
+
+# PlayerData
+class TestPlayerDataObject__set_values(unittest.TestCase):
+    def test__set(self):
+        pd = data_objects.PlayerData()
+        pd.set_values('username', 'token')
+        self.assertEqual(pd.username, 'username')
+        self.assertEqual(pd.token, 'token')
+    
+    def test__returns_self(self):
+        pd = data_objects.PlayerData()
+        pd1 = pd.set_values('username', 'token')
+        self.assertEqual(pd, pd1)
+
+
+class TestPlayerDataObject__set_values_from_file(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.res = TestResources()
+    
+    def test__set(self):
+        pd = data_objects.PlayerData()
+        pd.set_values_from_file(os.path.join(self.res.resources_root, 'test_player_data.json'))
+        self.assertEqual(pd.username, 'username_value')
+        self.assertEqual(pd.token, 'token_value')
+    
+    def test__returns_self(self):
+        pd = data_objects.PlayerData()
+        pd1 = pd.set_values_from_file(os.path.join(self.res.resources_root, 'test_player_data.json'))
+        self.assertEqual(pd, pd1)
+
+
+class TestPlayerDataObject__as_params(unittest.TestCase):
+    def test__is_dict(self):
+        pd = data_objects.PlayerData()
+        pd.set_values('username', 'token')
+        params = pd.as_params()
+        self.assertIsInstance(params, dict)
+    
+    def test__has_correct_values(self):
+        pd = data_objects.PlayerData()
+        pd.set_values('username', 'token')
+        params = pd.as_params()
+        self.assertEqual(params['username'], 'username')
+        self.assertEqual(params['token'], 'token')
+    
+    def test__nothing_extra(self):
+        pd = data_objects.PlayerData()
+        pd.set_values('username', 'token')
+        params = pd.as_params()
+        for k, _ in params.items():
+            self.assertIn(k , ['username', 'token'])
