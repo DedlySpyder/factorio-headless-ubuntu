@@ -133,11 +133,7 @@ class TestModHandling__replace_source(unittest.TestCase):
 class TestModHandling__list_source_mod_files(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.res = TestResources(self.__name__)
-    
-    @classmethod
-    def tearDownClass(self):
-        self.res.cleanup()
+        self.res = TestResources()
     
     def test__found_only_files(self):
         files = mod_handling.list_source_mod_files(self.res.mods_root)
