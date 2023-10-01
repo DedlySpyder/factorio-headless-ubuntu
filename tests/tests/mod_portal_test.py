@@ -268,6 +268,13 @@ class TestModPortal__get_download_list(unittest.TestCase):
         for m in mods:
             mock.get(f'https://mods.factorio.com/api/mods/{m["name"]}/full', text=json.dumps(m))
     
+    def test__removes_base(self, m: requests_mock.Mocker):
+        mod_data = generate_mod_data('mod_name', [["base", "foo", "! bar", "? baz", "(?) qux", "~ quxx"]])
+        expected = set(["mod_name", "foo", "quxx"])
+        self.mock_requests(m, [mod_data])
+        actual = mod_portal.get_download_list(['mod_name'])
+        self.assertSetEqual(actual, expected)
+    
     def test__single_mod_single_release_small(self, m: requests_mock.Mocker):
         mod_data = generate_mod_data('mod_name', [["foo", "! bar", "? baz", "(?) qux", "~ quxx"]])
         expected = set(["mod_name", "foo", "quxx"])

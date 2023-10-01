@@ -40,6 +40,7 @@ def get_download_list(mods: set[str]) -> set[str]:
         mod_data = requests.get(f'https://mods.factorio.com/api/mods/{m}/full').json()
         download_names.add(m)
         download_names.update(find_mod_dependencies(mod_data))
+    download_names.discard('base')
     return download_names
 
 
