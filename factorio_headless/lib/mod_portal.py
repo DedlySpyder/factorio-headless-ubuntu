@@ -4,7 +4,7 @@ import requests
 
 from datetime import datetime
 
-from .data_objects import Dependency
+from .data_objects import Dependency, PlayerData
 from .mod_handling import MODS_SRC
 
 MANAGED_MODS_DIR = os.path.join(MODS_SRC, '__managed_mods')
@@ -43,17 +43,24 @@ def get_download_list(mods: set[str]) -> set[str]:
     return download_names
 
 
-# # player_data: PlayerData, 
-# def download_mods(mods: set[str], dst_dir: str = MANAGED_MODS_DIR):
-#     pathlib.Path(dst_dir).mkdir(parents=True, exist_ok=True)
-#     dependencies = get_download_list(mods)
-    # for m in mods:
-    #     mod_data = requests.get(f'https://mods.factorio.com/api/mods/{m}/full').json()
-    #     dependencies.update(find_mod_dependencies(mod_data))
-    #     print('find dependencies and merge into mods')
-    # mods.extend(dependencies) # TODO - need to remove "base"
-    # return mods
-    
-    # for m in mods:
-    #     print('actually download the mods to the dst dir')
-    # pass
+def download_single_mod(mod: str, player_data: PlayerData, dst_dir: str, chunk_size: int = 8192) -> None:
+    mod_data = requests.get(f'https://mods.factorio.com/api/mods/{mod}/full').json()
+    release = get_latest_version(mod_data)
+    dst_file = os.path.join(dst_dir, release['file_name'])
+    url = f'https://mods.factorio.com{release["download_url"]}'
+    with requests.get(url, params=player_data.as_params(), stream=True) as r:
+        r.raise_for_status()
+        if 'Content-Type' in r.headers and r.headers['Content-Type'] == 'application/octet-stream':
+            with open(dst_file, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=chunk_size):
+                    f.write(chunk)
+        else:
+            h = str(dict(r.headers))
+            raise RuntimeError(f'Unexpected Content-Type returned for {mod}, headers: {h}')
+
+
+def download_mods(mods: set[str], player_data: PlayerData, dst_dir: str = MANAGED_MODS_DIR):
+    pathlib.Path(dst_dir).mkdir(parents=True, exist_ok=True)
+    for mod in get_download_list(mods):
+        download_single_mod(mod, player_data, dst_dir)
+
