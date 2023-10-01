@@ -6,6 +6,8 @@ import requests
 import requests_mock
 import unittest
 
+from typing import Tuple
+
 from . import TestResources
 
 from factorio_headless.lib import data_objects, mod_portal
@@ -502,22 +504,67 @@ class TestModPortal__download_single_mod(unittest.TestCase):
         self.assertRaises(requests.exceptions.HTTPError, mod_portal.download_single_mod, mod_name, player_data, dst_dir)
 
 
-# POC for requests mocking, works well, have to supply all URLs that will get called
-# @requests_mock.Mocker()
-# class TestModPortal_download_mods(unittest.TestCase):
-    # @classmethod
-    # def setUpClass(self):
-    #     self.res = TestResources(self.__name__)
+@requests_mock.Mocker()
+class TestModPortal__download_mods(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.res = TestResources(self.__name__)
     
-#     @classmethod
-#     def tearDownClass(self):
-#         self.res.cleanup()
+    @classmethod
+    def tearDownClass(self):
+        self.res.cleanup()
     
-#     def test__foobar(self, m: requests_mock.Mocker):
-#         mods = ['Avatars'] 
-#         m.get(f'https://mods.factorio.com/api/mods/Avatars/full', text='{"releases":[{"released_at":"2023-01-01Z", "info_json": {"dependencies": ["foobar"]}}]}')
-#         foo = mod_portal.download_mods(mods, dst_dir=self.res.build_test_dir())
-#         self.assertEqual(set(), foo)
+    player_data = data_objects.PlayerData().set_values('username_value', 'token_value')
+    def mock_mod_downloads(self, mock: requests_mock.Mocker, mods: list[Tuple[str, list[str]]]):
+        for mod_name, dependencies in mods:
+            src_filename = os.path.join(self.res.resources_root, f'{mod_name}_1.0.zip')
+            mod_data = generate_mod_data(mod_name, [dependencies], f'{mod_name}_1.0.zip', f'/download/{mod_name}/url_suffix')
+            response_headers = {"Content-Type": "application/octet-stream"}
+            mock.get(f'https://mods.factorio.com/api/mods/{mod_name}/full', text=json.dumps(mod_data))
+            with open(src_filename, 'rb') as f:
+                mock.get(
+                    f'https://mods.factorio.com/download/{mod_name}/url_suffix?username={self.player_data.username}&token={self.player_data.token}',
+                    content=f.read(),
+                    headers=response_headers
+                )
+    
+    def test__no_depdendencies(self, m: requests_mock.Mocker):
+        mod_name = 'mod'
+        src_filename = os.path.join(self.res.resources_root, f'{mod_name}_1.0.zip')
+        self.mock_mod_downloads(m, [(mod_name, [])])
+        dst_dir = self.res.build_test_dir()
+        mod_portal.download_mods([mod_name], self.player_data, dst_dir)
+        
+        contents = os.listdir(dst_dir)
+        self.assertEqual(len(contents), 1, f'Downloaded more than 1 file: {contents}')
+        self.assertEqual(contents[0], f'{mod_name}_1.0.zip', f'Unexpected downloaded file')
+        self.assertTrue(filecmp.cmp(os.path.join(dst_dir, contents[0]), src_filename), 'Downloaded file does not match source file')
+    
+    def test__only_base_dependency(self, m: requests_mock.Mocker):
+        mod_name = 'mod'
+        src_filename = os.path.join(self.res.resources_root, f'{mod_name}_1.0.zip')
+        self.mock_mod_downloads(m, [(mod_name, ["base"])])
+        dst_dir = self.res.build_test_dir()
+        mod_portal.download_mods([mod_name], self.player_data, dst_dir)
+        
+        contents = os.listdir(dst_dir)
+        self.assertEqual(len(contents), 1, f'Downloaded more than 1 file: {contents}')
+        self.assertEqual(contents[0], f'{mod_name}_1.0.zip', f'Unexpected downloaded file')
+        self.assertTrue(filecmp.cmp(os.path.join(dst_dir, contents[0]), src_filename), 'Downloaded file does not match source file')
+    
+    def test__other_mods(self, m: requests_mock.Mocker):
+        mod_name = 'mod'
+        self.mock_mod_downloads(m, [(mod_name, ["base", "mod1"])])
+        mod1_name = 'mod1'
+        self.mock_mod_downloads(m, [(mod1_name, [])])
+        dst_dir = self.res.build_test_dir()
+        mod_portal.download_mods([mod_name], self.player_data, dst_dir)
+        
+        contents = os.listdir(dst_dir)
+        self.assertEqual(len(contents), 2, f'Downloaded more than 2 files: {contents}')
+        for dst_file in contents:
+            self.assertIn(dst_file, [f'{mod_name}_1.0.zip', f'{mod1_name}_1.0.zip'], f'Unexpected downloaded file')
+            self.assertTrue(filecmp.cmp(os.path.join(dst_dir, dst_file), os.path.join(self.res.resources_root, dst_file)), 'Downloaded file does not match source file')
 
 
 if __name__ == '__main__':
