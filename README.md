@@ -14,4 +14,3 @@ This contains Factorio, python 3.8, and some [helper scripts](https://github.com
 The version of Factorio that was originally downloaded for the image can be found in `/factorio/version`
 
 [Dockerfile Source](https://github.com/DedlySpyder/factorio-headless-ubuntu/blob/main/Dockerfile)
-
